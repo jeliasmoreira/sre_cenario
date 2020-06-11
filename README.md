@@ -44,4 +44,46 @@ Os seguintes serviços estao disponiveis
 Esta saída indica que os serviços estão disponíveis e prontos para o uso no **IP:Porta** apresentado.
          
 
+# Dashboards e visualizações disponíveis 
+
+Os serviços Prometheus, Grafana e Alerta estão disponíveis para os times terem visualizações e dashboards pertinentes a métricas e logs. O serviço alerta requer autenticação.
+
+**Prometheus**
+
+Nesta imagem vemos a “saúde” dos targets cadastrados no Prometheus
+
+![](imagens/prometehus_targets.png)
+
+Nesta serviço podemos criar consultas seja na sessão de queries ou via Grafana se métricas que são coletadas pelos serviços **Alertmanager**, **Collectd**, **Node-Exporter** e **Grafana**.
+
+A imagem a seguir exibe uma queries coletando os alertas no ambiente e sua origem
+
+![](imagens/prometehus_alerts.png)
+
+**Grafana**
+
+A partir dos dados coletados pelo Prometheus, é possível agora criar dashboards ricos em detalhes visuais para que os times possam ter visibilidade e insights.
+
+Informações da docker machine
+
+![](imagens/grafana_hostInfo.PNG)
+
+Informações dos containers em execução
+
+![](imagens/grafana_containerInfo.png)
+
+**Alerta**
+
+O painel Alerta permitir visualizar de forma rica em detalhes os alertas capturados pelo Alert Manager.
+
+Para ter acesso ao dashboard do alerta, é necessário utilizar o usuário admin@alerta.io e a senha alerta
+
+![](imagens/alerta_dashboard.PNG)
+
+A imagem a seguir exibe informações detalhadas de um alerta.
+
+![](imagens/alerta_details.PNG)
+
+
+
 
