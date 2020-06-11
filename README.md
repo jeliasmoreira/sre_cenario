@@ -28,6 +28,7 @@ Para que seja possível o deploy deste ambiente, é necessário ter acesso a uma
 #cd ./ser_cenario
 
 **3.** Proceda agora com a execução do shell script de implantação.
+
 #sh deploy.sh
 
 Aguarde até o final da execução e uma saída como a seguir será exibida
