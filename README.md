@@ -19,17 +19,17 @@ O macro diagrama dos serviços pode ser representado pela imagem a seguir:
  
 Para que seja possível o deploy deste ambiente, é necessário ter acesso a uma docker machine, com ambiente docker no **mínimo na versão 18.06.0-ce** e o binário do docker composse na **versão 1.26.0**. Também é necessário o **git** instalado.
 
-**1.** Execute o git clone para obter o arquivos de implantação.
+**1.** Entre na pasta /usr e execute o git clone para obter o arquivos de implantação.
 
-#git clone https://github.com/jeliasmoreira/sre_cenario.git
+#cd /usr && git clone https://github.com/jeliasmoreira/sre_cenario.git
 
 **2.** Após o clone do repositório, entre na pasta ./ser_cenario.
 
-#cd ./ser_cenario
+#cd ./ser_cenario/
 
-**3.** Proceda agora com a execução do shell script de implantação.
+**3.** Proceda agora com a execução do shell script de implantação, que esta no subdir infra.
 
-#sh deploy.sh
+#sh infra/deploy.sh
 
 Aguarde até o final da execução e uma saída como a seguir será exibida
 

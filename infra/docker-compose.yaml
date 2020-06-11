@@ -1,0 +1,333 @@
+version: '3.7'
+
+volumes:
+    prometheus_data: {}
+    grafana_data: {}
+    data01:
+     driver: local
+    data02:
+     driver: local
+    data03:
+     driver: local
+    data04:
+     driver: local
+    data05:
+     driver: local
+
+
+networks:
+  front-tier:
+  back-tier:
+
+services:
+
+  fluentd:
+      container_name: fluentd
+      build: ./fluentd
+      volumes:
+        - ./fluentd/conf:/fluentd/etc
+#      links:
+#        - "es01"
+#        - "es02"
+#        - "es03"
+      ports:
+        - "24224:24224"
+        - "24224:24224/udp"
+      networks:
+        - back-tier
+        - front-tier
+
+# Metrics
+  prometheus:
+    image: prom/prometheus:v2.1.0
+    container_name: prometheus
+    volumes:
+      - ./prometheus/:/etc/prometheus/
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    ports:
+      - 9090:9090
+    links:
+      - cadvisor:cadvisor
+      - alertmanager:alertmanager
+    depends_on:
+      - cadvisor
+    networks:
+      - back-tier
+    restart: always
+#    deploy:
+#      placement:
+#        constraints:
+#          - node.hostname == ${HOSTNAME}
+    logging:
+      driver: "fluentd"
+      options:
+        tag: prometheus
+        fluentd-address: localhost:24224
+
+  alertmanager:
+    image: prom/alertmanager
+    container_name: alertmanager
+    ports:
+      - 9093:9093
+    volumes:
+      - ./alertmanager/:/etc/alertmanager/
+    networks:
+      - back-tier
+    restart: always
+    command:
+      - '--config.file=/etc/alertmanager/config.yml'
+      - '--storage.path=/alertmanager'
+#    deploy:
+#      placement:
+#        constraints:
+#          - node.hostname == ${HOSTNAME}
+    logging:
+      driver: "fluentd"
+      options:
+        tag: alertmanager
+        fluentd-address: localhost:24224
+
+
+  cadvisor:
+    image: google/cadvisor
+    container_name: cadvisor
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    ports:
+      - 10080:8080
+    networks:
+      - back-tier
+    restart: always
+    deploy:
+      mode: global
+    logging:
+      driver: "fluentd"
+      options:
+        tag: cadvisor
+        fluentd-address: localhost:24224
+
+
+  node-exporter:
+    image: prom/node-exporter
+    container_name: node-exporter
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command: 
+      - '--path.procfs=/host/proc' 
+      - '--path.sysfs=/host/sys'
+      - --collector.filesystem.ignored-mount-points
+      - "^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)"
+    ports:
+      - 19100:9100
+    networks:
+      - back-tier
+    restart: always
+    deploy:
+      mode: global
+    logging:
+      driver: "fluentd"
+      options:
+        tag: node-exporter
+        fluentd-address: localhost:24224      
+
+  collectd:
+    image: prom/collectd-exporter
+    container_name: collectd
+    ports:
+      - 9103:9103
+    restart: always
+    networks:
+      - back-tier 
+    logging:
+      driver: "fluentd"
+      options:
+        tag: collectd
+        fluentd-address: localhost:24224          
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    user: "472"
+    depends_on:
+      - prometheus
+    ports:
+      - 3000:3000
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning/:/etc/grafana/provisioning/
+    env_file:
+      - ./grafana/config.monitoring
+    networks:
+      - back-tier
+      - front-tier
+    restart: always
+    logging:
+      driver: "fluentd"
+      options:
+        tag: grafana
+        fluentd-address: localhost:24224
+
+  alerta:
+    image: alerta/alerta-web
+    container_name: alerta
+    ports:
+      - 10081:8080
+    depends_on:
+      - db
+    environment:
+      #- DEBUG=1  # remove this line to turn DEBUG off
+      - DATABASE_URL=mongodb://db:27017/monitoring
+      # - AUTH_REQUIRED=True
+      - ADMIN_USERS=admin@alerta.io
+      - PLUGINS=remote_ip,reject,heartbeat,blackout,prometheus
+      - ALERTMANAGER_API_URL=http://alertmanager:9093
+    restart: always
+    networks:
+      - back-tier
+      - front-tier
+    logging:
+      driver: "fluentd"
+      options:
+        tag: alerta
+        fluentd-address: localhost:24224         
+
+  db:
+    image: mongo
+    container_name: db
+    volumes:
+      - data01:/data/db
+    restart: always
+    networks:
+      - back-tier
+    logging:
+      driver: "fluentd"
+      options:
+        tag: db
+        fluentd-address: localhost:24224
+
+# Loggin
+
+
+  es01:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.7.1
+    container_name: es01
+    environment:
+      - node.name=es01
+      - cluster.name=es-docker-cluster
+      - discovery.seed_hosts=es02,es03
+      - cluster.initial_master_nodes=es01,es02,es03
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - data02:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    networks:
+      - back-tier
+  es02:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.7.1
+    container_name: es02
+    environment:
+      - node.name=es02
+      - cluster.name=es-docker-cluster
+      - discovery.seed_hosts=es01,es03
+      - cluster.initial_master_nodes=es01,es02,es03
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - data03:/usr/share/elasticsearch/data
+    ports:
+      - 9300:9300      
+    networks:
+      - back-tier
+  es03:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.7.1
+    container_name: es03
+    environment:
+      - node.name=es03
+      - cluster.name=es-docker-cluster
+      - discovery.seed_hosts=es01,es02
+      - cluster.initial_master_nodes=es01,es02,es03
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - data04:/usr/share/elasticsearch/data
+    ports:
+      - 9400:9400           
+    networks:
+      - back-tier
+
+
+  kib01:
+    image: docker.elastic.co/kibana/kibana:7.7.0
+    container_name: kib01
+    ports:
+      - 5601:5601
+    environment:
+      #ELASTICSEARCH_URL: http://localhost:9200
+      ELASTICSEARCH_HOSTS: '["http://es01:9200","http://es02:9300","https://es03:9400"]'
+         
+    networks:
+      - back-tier 
+      - front-tier
+
+
+  covid-19-api:
+    image: nigelmpofu/covid-19-api
+    container_name: covid-19-api
+    restart: always
+    ports:
+      - 9119:9119        
+    networks:
+      - back-tier 
+      - front-tier
+    logging:
+      driver: "fluentd"
+      options:
+        tag: covid-19-api
+        fluentd-address: localhost:24224        
+
+      
+  db_app:
+    image: mongo
+    container_name: db_app
+    volumes:
+      - data05:/data/db
+    restart: always
+    ports:
+      - 27018:27017        
+    networks:
+      - back-tier 
+    logging:
+      driver: "fluentd"
+      options:
+        tag: db_app
+        fluentd-address: localhost:24224      
+
+
+
+
+
+#      docker run -d --restart=unless-stopped -p 9119:9119 --name covid-19-api nigelmpofu/covid-19-api:latest
