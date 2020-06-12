@@ -25,7 +25,7 @@ Para que seja possível o deploy deste ambiente, é necessário ter acesso a uma
 
 **2.** Após o clone do repositório, entre na pasta ./ser_cenario.
 
-#cd ./ser_cenario/
+#cd ./sre_cenario/
 
 **3.** Proceda agora com a execução do shell script de implantação, que esta no subdir infra.
 
