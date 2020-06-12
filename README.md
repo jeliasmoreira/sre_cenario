@@ -17,7 +17,7 @@ O macro diagrama dos serviços pode ser representado pela imagem a seguir:
  
  # Deploy do ambiente
  
-Para que seja possível o deploy deste ambiente, é necessário ter acesso a uma docker machine **linux**, com ambiente docker no **mínimo na versão 18.06.0-ce** e o binário do docker composse na **versão 1.26.0**. Também é necessário o **git** instalado.
+Para que seja possível o deploy deste ambiente, é necessário ter acesso a uma docker machine **linux**, com credenciais de root, com ambiente docker no **mínimo na versão 18.06.0-ce** e o binário do docker composse na **versão 1.26.0**. Também é necessário o **git** instalado.
 
 **1.** Entre na pasta /usr e execute o git clone para obter o arquivos de implantação.
 
