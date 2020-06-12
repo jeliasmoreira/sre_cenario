@@ -44,7 +44,7 @@ Os seguintes serviços estao disponiveis
 Esta saída indica que os serviços estão disponíveis e prontos para o uso no **IP:Porta** apresentado.
          
 
-# Dashboards e visualizações disponíveis 
+# Visualizações disponíveis e Dashboards 
 
 Os serviços Prometheus, Grafana e Alerta estão disponíveis para os times terem visualizações e dashboards pertinentes a métricas e logs. O serviço alerta requer autenticação.
 
