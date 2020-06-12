@@ -118,11 +118,11 @@ Para termos uma aplicação funcional gerando logs, foi implantado um container 
 
 *IP_DE_IMPLACAO: 9119/ - Frontend*
 
-*IP_DE_IMPLACAO: 9119/ all – Retorna informações totalizadas como casos, recuperados, mortes.*
+*IP_DE_IMPLACAO: 9119/ - /all – Retorna informações totalizadas como casos, recuperados, mortes.*
 
-*IP_DE_IMPLACAO: 9119/ - countries –  - Retorna o ranking de países.*
+*IP_DE_IMPLACAO: 9119/ - /countries –  - Retorna o ranking de países.*
 
-*IP_DE_IMPLACAO: 9119/ - countries/{country-name} - Retorna o infomações especificas do pais em relação ao covid19.*
+*IP_DE_IMPLACAO: 9119/ - /countries/{country-name} - Retorna o infomações especificas do pais em relação ao covid19.*
 
 
 
