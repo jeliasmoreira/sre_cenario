@@ -3,7 +3,7 @@ Infraestrura definida como código para suportar aplicações modernas, obter m�
 
 # Objetivo 
 
-Este projeto visa provisionar de forma ágil serviços que suportem a execução de aplicações coletando seus logs e métricas de infraestrutura.
+Este projeto visa provisionar, de forma ágil, serviços que suportem a execução de aplicações coletando seus logs e métricas de infraestrutura.
 
 Para alcançar este objetivo serão instanciados via docker-compose  uma stack de serviços de metrics e loggins compostas por Prometheus, Node-Exporter, Collectd, CAdivisor, Alerta, MongoDB, Grafana, Elasticsearch, Kibana e Fluentd. Com estas ferramentas é possivel a coleta de informações de infra e logs de aplicação de forma automatizada e gerar visualizações ricas em detalhes e em tempo real.
 
