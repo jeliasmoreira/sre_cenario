@@ -116,13 +116,13 @@ A partir do padrão das visualizações é possível criar agora dashboard para 
 
 Para termos uma aplicação funcional gerando logs, foi implantado um container com a imagem covid-19-api, que tem os seguintes endpoints.
 
-*IP_DE_IMPLACAO: 9119/ - Frontend*
+*IP_DE_IMPLANTACAO: 9119/ - Frontend*
 
-*IP_DE_IMPLACAO: 9119/ - /all – Retorna informações totalizadas como casos, recuperados, mortes.*
+*IP_DE_IMPLANTACAO: 9119/ - /all – Retorna informações totalizadas como casos, recuperados, mortes.*
 
-*IP_DE_IMPLACAO: 9119/ - /countries –  - Retorna o ranking de países.*
+*IP_DE_IMPLANTACAO: 9119/ - /countries –  - Retorna o ranking de países.*
 
-*IP_DE_IMPLACAO: 9119/ - /countries/{country-name} - Retorna o infomações especificas do pais em relação ao covid19.*
+*IP_DE_IMPLANTACAO: 9119/ - /countries/{country-name} - Retorna o infomações especificas do pais em relação ao covid19.*
 
 
 
